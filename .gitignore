@@ -4,3 +4,7 @@ __pycache__/
 *.pyc
 data/
 .env
+
+# incident-response runtime output (never committed)
+incident-response/inbox/
+incident-response/canary/runs/
