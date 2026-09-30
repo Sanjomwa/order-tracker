@@ -38,17 +38,18 @@ Grafana rule fires -> policy routes OrderTracker5xx to contact point "incident-r
 |---|---|---|
 | 1 | replay_list_from_evidence | the evidence's full Tempo traces (error-trace search + traces of ERROR log lines) contain GET server spans with a 5xx whose `url.path` matches the alert's route template; never taken from the model's text |
 | 2 | replay_reproduces_before_fix | in-process replay against the **current** code (scratch copy of the repo + a copy of the live DB) returns at least one 5xx; otherwise nothing proves a fix |
-| 3 | agent_run | headless claude (fix flag set) finished in `incidents/<ID>/workspace/` (copies of app/ and tests/ + evidence; no .env, no .git) |
-| 4 | diff_gate | only existing `app/**.py` files changed; no new/deleted files; no change to tests/ or evidence/; at most 60 changed lines / 20 kB; secret scan of the patch clean. Saved as `fix.patch` |
-| 5 | test_gate | `uv run --frozen pytest -q` passes in the patched scratch copy (`test-gate.log`) |
-| 6 | replay_before_restart | the same requests return non-5xx against the patched code (in-process, copied DB) |
-| 7 | real_tree_unchanged_since_workspace | the real app/ files still equal the workspace baseline |
-| 8 | restart_app | patched files copied into app/, `docker compose up --build -d --wait app` succeeds |
-| 9 | replay_after_restart | the same requests return non-5xx from the live app (127.0.0.1 only) |
-| 10 | grafana_rule_normal | Grafana shows the rule Normal for the route within 5 minutes |
+| 3 | repo_untouched_by_agent | a sha256 fingerprint of the whole repo (except .git, .venv, caches and the responder's runtime folders) is identical before and after the agent run; otherwise the changed app/ and tests/ files are restored from `baseline/` |
+| 4 | agent_run | headless claude (fix flag set) finished in `incidents/<ID>/workspace/` (copies of app/ and tests/ + evidence; no .env, no .git) |
+| 5 | diff_gate | only existing `app/**.py` files changed; no new/deleted files; no change to tests/ or evidence/; at most 60 changed lines / 20 kB; secret scan of the patch clean. Saved as `fix.patch` |
+| 6 | test_gate | `uv run --frozen pytest -q` passes in the patched scratch copy (`test-gate.log`) |
+| 7 | replay_before_restart | the same requests return non-5xx against the patched code (in-process, copied DB) |
+| 8 | real_tree_unchanged_since_workspace | the real app/ files still equal the workspace baseline |
+| 9 | restart_app | patched files copied into app/, `docker compose up --build -d --wait app` succeeds |
+| 10 | replay_after_restart | the same requests return non-5xx from the live app (127.0.0.1 only) |
+| 11 | grafana_rule_normal | Grafana shows the rule Normal for the route within 5 minutes |
 
-A failure in 1-7 changes nothing in the real tree: the incident is escalated. A failure in
-8-10 triggers a **rollback**: the original app/ files are restored from
+A failure in 1-8 changes nothing in the real tree: the incident is escalated. A failure in
+9-11 triggers a **rollback**: the original app/ files are restored from
 `incidents/<ID>/baseline/` (no git), the app is rebuilt, and the incident is escalated.
 Records: `gates.json`, `fix.patch`, `verification.json`, `summary.md`, `escalation.md`.
 
