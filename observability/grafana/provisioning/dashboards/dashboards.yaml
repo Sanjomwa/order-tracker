@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: order-tracker
+    orgId: 1
+    folder: Order Tracker
+    type: file
+    disableDeletion: true
+    allowUiUpdates: false
+    options:
+      path: /var/lib/grafana/dashboards

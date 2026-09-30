@@ -1,5 +1,10 @@
 name: order-tracker
 
+# One project: the app plus its telemetry pipeline.
+#   app -> otel-collector -> Prometheus (metrics), Loki (logs), Tempo (traces) -> Grafana
+# Everything is published on 127.0.0.1 only; the collector is not published at all.
+# `docker compose up --build -d --wait` needs no .env (see .env.example).
+
 services:
   app:
     image: order-tracker:${ORDER_TRACKER_TAG:-local}
@@ -8,8 +13,13 @@ services:
       - "127.0.0.1:${ORDER_TRACKER_PORT:-8000}:8000"
     environment:
       ORDER_DB_PATH: /data/orders.db
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      # true also prints spans, metrics and logs to `docker compose logs app` (Q2).
+      OTEL_CONSOLE_EXPORT: ${OTEL_CONSOLE_EXPORT:-false}
     volumes:
       - orders:/data
+    depends_on:
+      - otel-collector
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3)"]
@@ -17,8 +27,105 @@ services:
       timeout: 3s
       retries: 12
 
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.149.0
+    command: ["--config=/etc/otelcol/collector.yaml"]
+    volumes:
+      - ./observability/collector.yaml:/etc/otelcol/collector.yaml:ro
+    # No published ports: OTLP (4317/4318) is reachable only inside this network.
+    depends_on:
+      - loki
+      - tempo
+    mem_limit: 256m
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v3.5.5
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=2d
+      - --web.enable-lifecycle
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    mem_limit: 512m
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9090/-/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+
+  loki:
+    image: grafana/loki:3.6.17
+    command: ["-config.file=/etc/loki/loki.yaml"]
+    volumes:
+      - ./observability/loki.yaml:/etc/loki/loki.yaml:ro
+      - loki_data:/loki
+    ports:
+      - "127.0.0.1:3100:3100"
+    mem_limit: 512m
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:2.10.8
+    command: ["-config.file=/etc/tempo/tempo.yaml"]
+    volumes:
+      - ./observability/tempo.yaml:/etc/tempo/tempo.yaml:ro
+      - tempo_data:/var/tempo
+    ports:
+      - "127.0.0.1:3200:3200"
+    mem_limit: 512m
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:12.3.11
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      # From .env (gitignored). Without it, Grafana's own default applies; see .env.example.
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_SERVER_ROOT_URL: http://localhost:3000/
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+    mem_limit: 512m
+    restart: unless-stopped
+    # Loki, Tempo and the collector images ship no shell or HTTP client, so this
+    # healthcheck also probes their readiness endpoints: when grafana is healthy,
+    # the whole pipeline is ready to receive and to be queried (`up --wait`).
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          wget -q -O /dev/null http://127.0.0.1:3000/api/health &&
+          wget -q -O /dev/null http://loki:3100/ready &&
+          wget -q -O /dev/null http://tempo:3200/ready &&
+          wget -q -O /dev/null http://otel-collector:13133/
+      interval: 5s
+      timeout: 5s
+      retries: 36
+
 volumes:
   orders:
+  prometheus_data:
+  loki_data:
+  tempo_data:
+  grafana_data:
 
 networks:
   default:

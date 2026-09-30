@@ -1,0 +1,88 @@
+# OpenTelemetry Collector: the single entry point for the app's telemetry.
+#   traces  -> Tempo   (OTLP/gRPC)
+#   logs    -> Loki    (native OTLP endpoint; this is the ONLY log path into Loki)
+#   metrics -> Prometheus (scraped from the exporter below on :8889)
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+extensions:
+  # Readiness endpoint, probed by the grafana healthcheck (this image has no shell).
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 190      # container mem_limit is 256m
+    spike_limit_mib: 40
+
+  # Defense in depth: the app captures no headers, but if any instrumentation ever
+  # starts attaching http.request.header.* / http.response.header.* attributes, drop
+  # them here. user_agent.original (the User-Agent header value) is added by the ASGI
+  # instrumentation by default and is not needed for this service.
+  transform/strip_headers:
+    error_mode: ignore
+    trace_statements:
+      - context: span
+        statements:
+          - delete_matching_keys(attributes, "^http\\.(request|response)\\.header\\..*")
+          - delete_key(attributes, "user_agent.original")
+    log_statements:
+      - context: log
+        statements:
+          - delete_matching_keys(attributes, "^http\\.(request|response)\\.header\\..*")
+          - delete_key(attributes, "user_agent.original")
+    metric_statements:
+      - context: datapoint
+        statements:
+          - delete_matching_keys(attributes, "^http\\.(request|response)\\.header\\..*")
+          - delete_key(attributes, "user_agent.original")
+
+  batch:
+    timeout: 5s
+
+exporters:
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+  otlphttp/loki:
+    endpoint: http://loki:3100/otlp
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    # Copy resource attributes (service.name, service.version,
+    # deployment.environment.name, ...) onto every series as labels
+    # (service_name, service_version, deployment_environment_name, ...).
+    resource_to_telemetry_conversion:
+      enabled: true
+    metric_expiration: 5m
+
+service:
+  extensions: [health_check]
+  telemetry:
+    metrics:
+      level: basic
+      readers:
+        - pull:
+            exporter:
+              prometheus:
+                host: 0.0.0.0
+                port: 8888
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, transform/strip_headers, batch]
+      exporters: [otlp/tempo]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, transform/strip_headers, batch]
+      exporters: [otlphttp/loki]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, transform/strip_headers, batch]
+      exporters: [prometheus]

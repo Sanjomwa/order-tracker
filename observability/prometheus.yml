@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# No rule_files: alerting is Grafana-managed (observability/grafana/provisioning/alerting/).
+
+scrape_configs:
+  # App metrics arrive via the collector's Prometheus exporter.
+  - job_name: otel-collector-export
+    honor_labels: true
+    static_configs:
+      - targets: ["otel-collector:8889"]
+  # The collector's own health/throughput.
+  - job_name: otel-collector-internal
+    static_configs:
+      - targets: ["otel-collector:8888"]
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
