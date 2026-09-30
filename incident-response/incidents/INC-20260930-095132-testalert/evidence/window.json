@@ -1,0 +1,17 @@
+{
+  "incident_id": "INC-20260930-095132-testalert",
+  "startsAt": "2026-09-30T09:51:32.736937051Z",
+  "anchor": "2026-09-30T09:51:32Z",
+  "anchor_source": "startsAt",
+  "route": null,
+  "route_source": "none in alert: all routes",
+  "logs_and_traces": {
+    "start": "2026-09-30T09:36:32Z",
+    "end": "2026-09-30T09:51:32Z"
+  },
+  "metrics": {
+    "start": "2026-09-30T08:51:32Z",
+    "end": "2026-09-30T09:51:32Z",
+    "step_seconds": 30
+  }
+}

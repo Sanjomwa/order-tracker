@@ -1,0 +1,15 @@
+# Webhook to the incident responder, which runs on the WSL host bound to 127.0.0.1:8001.
+# With Docker Desktop, host.docker.internal reaches WSL's loopback
+# (see incident-response/canary/canary-results.md).
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: incident-responder
+    receivers:
+      - uid: incident-responder-webhook
+        type: webhook
+        disableResolveMessage: false   # resolved notifications are sent; the responder ignores them
+        settings:
+          url: http://host.docker.internal:8001/alerts
+          httpMethod: POST

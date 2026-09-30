@@ -11,3 +11,5 @@ incident-response/canary/runs/
 incident-response/logs/
 incident-response/state/
 incident-response/quarantine/
+incident-response/incidents/*/workspace/
+incident-response/incidents/*/baseline/

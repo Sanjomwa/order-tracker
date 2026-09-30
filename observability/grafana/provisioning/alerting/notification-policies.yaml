@@ -1,0 +1,18 @@
+# Provisioning replaces the whole policy tree, so the root below restates Grafana's
+# default (default email contact point, grouped by folder and alert name) unchanged.
+# Only OrderTracker5xx is routed to the incident responder.
+apiVersion: 1
+
+policies:
+  - orgId: 1
+    receiver: grafana-default-email
+    group_by: ["grafana_folder", "alertname"]
+    routes:
+      - receiver: incident-responder
+        object_matchers:
+          - ["alertname", "=", "OrderTracker5xx"]
+        group_by: ["alertname", "route"]   # one notification group per failing route
+        group_wait: 10s                     # first notification ~10s after the rule fires
+        group_interval: 30s                 # changes within a group (new/resolved alerts)
+        repeat_interval: 12h                # no re-send while the same alert keeps firing
+        continue: false

@@ -41,7 +41,8 @@ METRIC_LOOKBACK = timedelta(minutes=60)   # metrics: startsAt - 60m -> now (was 
 STEP_SECONDS = 30
 LOG_LIMIT = 200
 TRACE_SEARCH_LIMIT = 20
-FULL_TRACES = 3
+FULL_TRACES = 3            # from the Tempo error-trace search
+FULL_TRACES_FROM_LOGS = 3  # more, for trace ids on ERROR log lines not already fetched
 HTTP_TIMEOUT = 20
 
 ROUTE_RE = re.compile(r"^/[A-Za-z0-9_/{}.\-]{0,120}$")
@@ -293,19 +294,29 @@ def collect(incident_id: str, incident_dir: Path, alert: dict[str, Any], now: da
             packet.write(name, get_json(f"{PROM}/api/v1/query", {"query": query, "time": int(now.timestamp())}),
                          "http_get", f"GET {PROM}/api/v1/query query=[{query}]")
 
+    logs: dict[str, Any] = {}
     for name, query in LOKI_QUERIES.items():
         params = {"query": query, "start": ns(log_start), "end": ns(now), "limit": LOG_LIMIT, "direction": "backward"}
-        packet.write(name, compact_loki(get_json(f"{LOKI}/loki/api/v1/query_range", params)), "http_get",
+        logs[name] = compact_loki(get_json(f"{LOKI}/loki/api/v1/query_range", params))
+        packet.write(name, logs[name], "http_get",
                      f"GET {LOKI}/loki/api/v1/query_range query=[{query}] limit={LOG_LIMIT} (compacted: line<=500 chars)")
 
     search = get_json(f"{TEMPO}/api/search", {"q": TRACEQL_ERRORS, "limit": TRACE_SEARCH_LIMIT,
                                               "start": int(log_start.timestamp()), "end": int(now.timestamp())})
     packet.write("tempo-error-traces-search.json", search, "http_get",
                  f"GET {TEMPO}/api/search q=[{TRACEQL_ERRORS}] limit={TRACE_SEARCH_LIMIT}")
-    trace_ids = [t.get("traceID") for t in (search.get("traces") or [])] if isinstance(search, dict) else []
-    for n, tid in enumerate([t for t in trace_ids if isinstance(t, str) and TRACE_ID_RE.match(t)][:FULL_TRACES], 1):
+    searched = [t.get("traceID") for t in (search.get("traces") or [])] if isinstance(search, dict) else []
+    searched = [t for t in searched if isinstance(t, str) and TRACE_ID_RE.match(t)][:FULL_TRACES]
+    from_logs = []
+    for line in (logs.get("logs-warn-error.json") or {}).get("lines") or []:
+        tid = line.get("trace_id")
+        if (str(line.get("detected_level", "")).upper() == "ERROR" and isinstance(tid, str) and TRACE_ID_RE.match(tid)
+                and tid not in searched and tid not in from_logs):
+            from_logs.append(tid)
+    for n, (tid, source) in enumerate([(t, "error-trace search") for t in searched] +
+                                      [(t, "trace_id of an ERROR log line") for t in from_logs[:FULL_TRACES_FROM_LOGS]], 1):
         packet.write(f"tempo-trace-{n}.json", get_json(f"{TEMPO}/api/v2/traces/{tid}"), "http_get",
-                     f"GET {TEMPO}/api/v2/traces/{tid} (full trace)")
+                     f"GET {TEMPO}/api/v2/traces/{tid} (full trace; source: {source})")
 
     packet.write("docker-compose-ps.json", compose_ps(), "command",
                  f"docker compose ps --all --format json (fields: {', '.join(COMPOSE_PS_FIELDS)})")

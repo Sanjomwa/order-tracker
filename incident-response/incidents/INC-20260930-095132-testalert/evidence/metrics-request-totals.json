@@ -1,0 +1,20 @@
+{
+  "status": "success",
+  "data": {
+    "resultType": "vector",
+    "result": [
+      {
+        "metric": {
+          "http_request_method": "GET",
+          "http_response_status_code": "404",
+          "http_route": "/api/orders/{order_id}",
+          "service_version": "dev"
+        },
+        "value": [
+          1790761892,
+          "5"
+        ]
+      }
+    ]
+  }
+}

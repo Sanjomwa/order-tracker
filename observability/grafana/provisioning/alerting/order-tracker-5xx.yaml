@@ -95,4 +95,4 @@ groups:
           __dashboardUid__: order-tracker-overview
           __panelId__: "6"
           dashboard_url: "http://localhost:3000/d/order-tracker-overview/order-tracker-overview?orgId=1&viewPanel=6"
-          runbook_url: "TODO(Q6): incident-response runbook for 5xx on order lookups"
+          runbook_url: "https://github.com/Sanjomwa/order-tracker/blob/main/incident-response/RUNBOOK.md"

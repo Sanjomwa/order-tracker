@@ -1,0 +1,88 @@
+{
+  "incident_id": "INC-20260930-095132-testalert",
+  "generated_at": "2026-09-30T09:51:33Z",
+  "read_only": true,
+  "secret_scan": "passed (key-like values, URL credentials, bearer tokens, private keys, API keys, values of key-like settings in .env)",
+  "entries": [
+    {
+      "file": "alert.json",
+      "kind": "input",
+      "query": "the alert as received (untrusted data; redacted copy)",
+      "timestamp": "2026-09-30T09:51:32Z",
+      "bytes": 1021,
+      "sha256": "8ad98f421adc560c42a15f5e21126f83b41717b751e5d6620cd29df783ff45f2"
+    },
+    {
+      "file": "window.json",
+      "kind": "input",
+      "query": "time window and route derived from the alert",
+      "timestamp": "2026-09-30T09:51:32Z",
+      "bytes": 446,
+      "sha256": "14496b7b00c50b9a4fe639596b21141533c86770342ae7ee21643496b9e5b466"
+    },
+    {
+      "file": "metrics-5xx-by-route.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:9090/api/v1/query_range query=[sum by (http_route, http_request_method, http_response_status_code) (increase(http_server_request_duration_seconds_count{service_name=\"order-tracker\", http_response_status_code=~\"5..\"}[1m]))] step=30",
+      "timestamp": "2026-09-30T09:51:32Z",
+      "bytes": 88,
+      "sha256": "f53f7479da871b7969d06ed9713caf1cb54c3980c9a712219f8d567c4ad8f446"
+    },
+    {
+      "file": "metrics-requests-by-route-status.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:9090/api/v1/query_range query=[sum by (http_route, http_request_method, http_response_status_code) (increase(http_server_request_duration_seconds_count{service_name=\"order-tracker\"}[1m]))] step=30",
+      "timestamp": "2026-09-30T09:51:32Z",
+      "bytes": 10897,
+      "sha256": "bdd137c7899780e4fd0a4ae53ab3f40165ff9a4bcc134b9d2d68e7b1756b962d"
+    },
+    {
+      "file": "metrics-request-totals.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:9090/api/v1/query query=[sum by (http_route, http_request_method, http_response_status_code, service_version) (http_server_request_duration_seconds_count{service_name=\"order-tracker\"})]",
+      "timestamp": "2026-09-30T09:51:32Z",
+      "bytes": 376,
+      "sha256": "72913785c767e174a6914924915b1d837fbd26f03287e65df80fa52a65b7559a"
+    },
+    {
+      "file": "logs-warn-error.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:3100/loki/api/v1/query_range query=[{service_name=\"order-tracker\"} | detected_level=~\"(?i)warn|warning|error|fatal|critical\"] limit=200 (compacted: line<=500 chars)",
+      "timestamp": "2026-09-30T09:51:32Z",
+      "bytes": 32,
+      "sha256": "4e483421ce9dda1f8d235f20d7edbb569854e86da03fff7834831644ba3de38f"
+    },
+    {
+      "file": "logs-recent.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:3100/loki/api/v1/query_range query=[{service_name=\"order-tracker\"}] limit=200 (compacted: line<=500 chars)",
+      "timestamp": "2026-09-30T09:51:32Z",
+      "bytes": 32,
+      "sha256": "4e483421ce9dda1f8d235f20d7edbb569854e86da03fff7834831644ba3de38f"
+    },
+    {
+      "file": "tempo-error-traces-search.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:3200/api/search q=[{resource.service.name=\"order-tracker\" && status = error}] limit=20",
+      "timestamp": "2026-09-30T09:51:32Z",
+      "bytes": 82,
+      "sha256": "508d7d2cb144e7bc9df5d6371444653c7cf13ce2f433c0e7cee1c92327038007"
+    },
+    {
+      "file": "docker-compose-ps.json",
+      "kind": "command",
+      "query": "docker compose ps --all --format json (fields: Service, State, Health, Status, Image, RunningFor, ExitCode)",
+      "timestamp": "2026-09-30T09:51:33Z",
+      "bytes": 1300,
+      "sha256": "2fefca77b97115d500e4e7ef2eb5cf6229be093bd13c93cdb2d24545f9f55e20"
+    },
+    {
+      "file": "git-state.json",
+      "kind": "command",
+      "query": "git rev-parse HEAD; git rev-parse --abbrev-ref HEAD; git status --short (first 100 lines)",
+      "timestamp": "2026-09-30T09:51:33Z",
+      "bytes": 868,
+      "sha256": "64603bfd50e9435f7538709455c216be6b3a32d7d054bd60cef93795f25193e3"
+    }
+  ]
+}

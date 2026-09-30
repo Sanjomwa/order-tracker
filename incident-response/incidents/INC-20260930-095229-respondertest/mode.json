@@ -1,0 +1,12 @@
+{
+  "mode": "read-only",
+  "reason": "test alert (labels.test == \"true\"): read-only analysis only",
+  "escalate": false,
+  "preconditions": [
+    {
+      "precondition": "not_a_test_alert",
+      "passed": false,
+      "detail": "labels.test == \"true\""
+    }
+  ]
+}

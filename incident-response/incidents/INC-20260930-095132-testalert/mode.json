@@ -1,0 +1,32 @@
+{
+  "mode": "read-only",
+  "reason": "fix-mode precondition(s) failed: grafana_rule_firing, no_other_fix_in_progress",
+  "escalate": true,
+  "preconditions": [
+    {
+      "precondition": "not_a_test_alert",
+      "passed": true,
+      "detail": "no test label"
+    },
+    {
+      "precondition": "grafana_rule_firing",
+      "passed": false,
+      "detail": "alert has no route label: fix mode needs a specific endpoint"
+    },
+    {
+      "precondition": "app_and_tests_clean",
+      "passed": true,
+      "detail": "clean"
+    },
+    {
+      "precondition": "first_fix_attempt_for_incident",
+      "passed": true,
+      "detail": "first attempt"
+    },
+    {
+      "precondition": "no_other_fix_in_progress",
+      "passed": false,
+      "detail": "not checked: an earlier precondition failed"
+    }
+  ]
+}

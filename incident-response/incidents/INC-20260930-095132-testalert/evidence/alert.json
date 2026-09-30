@@ -1,0 +1,24 @@
+{
+  "status": "firing",
+  "labels": {
+    "alertname": "TestAlert",
+    "grafana_folder": "Test Folder",
+    "instance": "Grafana"
+  },
+  "annotations": {
+    "summary": "Notification test"
+  },
+  "startsAt": "2026-09-30T09:51:32.736937051Z",
+  "endsAt": "0001-01-01T00:00:00Z",
+  "generatorURL": "?orgId=1",
+  "fingerprint": "326ea703b01f6100",
+  "silenceURL": "http://localhost:3000/alerting/silence/new?alertmanager=grafana&matcher=alertname%3DTestAlert&matcher=grafana_folder%3DTest+Folder&matcher=instance%3DGrafana&orgId=1",
+  "dashboardURL": "http://localhost:3000/d/dashboard_uid?from=1790758292736&orgId=1&to=1790761892743",
+  "panelURL": "http://localhost:3000/d/dashboard_uid?from=1790758292736&orgId=1&to=1790761892743&viewPanel=1",
+  "values": {
+    "B": 22,
+    "C": 1
+  },
+  "valueString": "[ var='B' labels={__name__=go_threads, instance=host.docker.internal:3000, job=grafana} value=22 ], [ var='C' labels={__name__=go_threads, instance=host.docker.internal:3000, job=grafana} value=1 ]",
+  "orgId": 1
+}

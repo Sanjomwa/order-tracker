@@ -1,0 +1,7 @@
+{"at": "2026-09-30T09:51:32Z", "event": "alert_received", "alertname": "TestAlert", "test": false, "dedupe_key": "fp:326ea703b01f6100:2026-09-30T09:51:32.736937051Z"}
+{"at": "2026-09-30T09:51:32Z", "event": "mode_selected", "mode": "read-only", "reason": "fix-mode precondition(s) failed: grafana_rule_firing, no_other_fix_in_progress"}
+{"at": "2026-09-30T09:51:33Z", "event": "evidence_collected", "files": 10, "secret_scan": "passed"}
+{"at": "2026-09-30T09:51:33Z", "event": "responder_started", "mode": "read-only", "model": "sonnet", "max_budget_usd": "0.50"}
+{"at": "2026-09-30T09:51:48Z", "event": "responder_finished", "mode": "read-only", "ok": true, "exit_code": 0, "seconds": 15.4, "cost_usd": 0.05977400000000001, "num_turns": 11, "permission_denials": 0, "subtype": "success"}
+{"at": "2026-09-30T09:51:48Z", "event": "final_secret_scan", "result": "passed"}
+{"at": "2026-09-30T09:51:48Z", "event": "finished", "outcome": "escalated"}

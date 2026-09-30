@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 import evidence
+import fixmode
 import responder
 
 HOMEWORK_TEST = {"alerts": [{"status": "firing", "labels": {"alertname": "ResponderTest", "test": "true"},
@@ -156,27 +157,47 @@ def firing_rules(state="Alerting", route="/api/orders/{order_id}", name="OrderTr
     ]}]}}
 
 
-def test_test_alert_never_enters_fix_mode_even_if_enabled_and_firing(monkeypatch):
+def mode_deps(tmp_path, firing=(True, "Alerting"), porcelain=""):
+    calls = []
+
+    def run(cmd, cwd, timeout, env=None):
+        calls.append(cmd)
+        return 0, porcelain
+    deps = fixmode.Deps(root=tmp_path, state=tmp_path / "state", run=run,
+                        rule_firing=lambda a: calls.append("grafana") or firing)
+    return deps, calls
+
+
+def test_test_alert_never_enters_fix_mode_even_if_enabled_and_firing(monkeypatch, tmp_path):
     monkeypatch.setattr(responder, "FIX_MODE_ENABLED", True)
+    deps, calls = mode_deps(tmp_path)
     [alert] = responder.parse_payload(payload(grafana_alert(labels={**grafana_alert()["labels"], "test": "true"})))
-    mode = responder.select_mode(alert, rule_firing=lambda a: (True, "firing"))
-    assert mode["mode"] == "read-only" and "test alert" in mode["reason"]
+    lock = fixmode.FixLock(deps.state)
+    mode = responder.select_mode(alert, tmp_path, deps, lock)
+    assert mode["mode"] == "read-only" and "test alert" in mode["reason"] and mode["escalate"] is False
+    assert calls == [] and not lock.held  # nothing that could lead to fix mode was even evaluated
 
 
-def test_fix_mode_is_off():
-    assert responder.FIX_MODE_ENABLED is False
+def test_fix_mode_can_be_switched_off(monkeypatch, tmp_path):
+    monkeypatch.setattr(responder, "FIX_MODE_ENABLED", False)
+    deps, calls = mode_deps(tmp_path)
     [alert] = responder.parse_payload(payload(grafana_alert()))
-    called = []
-    mode = responder.select_mode(alert, rule_firing=lambda a: called.append(a) or (True, "firing"))
-    assert mode == {"mode": "read-only", "reason": "fix mode not enabled (Q6)"}
-    assert not called
+    mode = responder.select_mode(alert, tmp_path, deps, fixmode.FixLock(deps.state))
+    assert mode["mode"] == "read-only" and mode["escalate"] is True and not calls
 
 
-def test_fix_mode_gate_requires_grafana_to_confirm_firing(monkeypatch):
+def test_fix_mode_selected_only_when_all_preconditions_pass(monkeypatch, tmp_path):
     monkeypatch.setattr(responder, "FIX_MODE_ENABLED", True)
     [alert] = responder.parse_payload(payload(grafana_alert()))
-    assert responder.select_mode(alert, rule_firing=lambda a: (False, "Normal"))["mode"] == "read-only"
-    assert responder.select_mode(alert, rule_firing=lambda a: (True, "Alerting"))["mode"] == "fix"
+    deps, _ = mode_deps(tmp_path)
+    lock = fixmode.FixLock(deps.state)
+    mode = responder.select_mode(alert, tmp_path, deps, lock)
+    assert mode["mode"] == "fix" and lock.held
+    lock.release()
+
+    deps, _ = mode_deps(tmp_path, firing=(False, "Normal"))
+    mode = responder.select_mode(alert, tmp_path, deps, fixmode.FixLock(deps.state))
+    assert mode["mode"] == "read-only" and mode["escalate"] and "grafana_rule_firing" in mode["reason"]
 
 
 # ------------------------------------------------------------------ Grafana firing check
@@ -241,12 +262,42 @@ def test_readonly_command_flags_are_exact():
         "--no-chrome",
         "--setting-sources", "",
         "--settings", '{"advisorModel":""}',
-        "--max-budget-usd", "0.50",
         "--model", "sonnet",
+        "--max-budget-usd", "0.50",
         "--append-system-prompt", responder.SYSTEM_PROMPT,
     ]
     cmd = responder.readonly_command()
     assert "--allowedTools" not in cmd and "Bash" not in " ".join(cmd) and "Edit" not in " ".join(cmd)
+
+
+def test_fix_command_flags_are_exact():
+    assert responder.fix_command() == [
+        "claude", "-p",
+        "--output-format", "json",
+        "--tools", "Read,Grep,Glob,Edit,Write",
+        "--permission-mode", "dontAsk",
+        "--allowedTools", "Edit(./**)", "Write(./**)",
+        "--disallowedTools", "Edit(./tests/**)", "Write(./tests/**)", "Edit(./evidence/**)", "Write(./evidence/**)",
+        "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
+        "--no-session-persistence",
+        "--disable-slash-commands",
+        "--no-chrome",
+        "--setting-sources", "",
+        "--settings", '{"advisorModel":""}',
+        "--model", "sonnet",
+        "--max-budget-usd", "1.00",
+        "--append-system-prompt", responder.FIX_SYSTEM_PROMPT,
+    ]
+    assert "Bash" not in " ".join(responder.fix_command())
+
+
+def test_task_renders_only_the_mode_section(tmp_path):
+    (tmp_path / "alert.json").write_text("{}")
+    ro = responder.render_task("INC-1", "read-only", tmp_path)
+    fix = responder.render_task("INC-1", "fix", tmp_path, prefix="evidence/")
+    assert "<!--" not in ro and "<!--" not in fix
+    assert "never edit it" not in ro and "never edit it" in fix
+    assert "- `alert.json`" in ro and "- `evidence/alert.json`" in fix
 
 
 def test_responder_env_is_allowlisted(monkeypatch):

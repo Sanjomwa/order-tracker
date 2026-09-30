@@ -1,0 +1,22 @@
+{
+  "head": "e5b46d2a491b7cc51ac9676d8b3233c83f1af524",
+  "branch": "main",
+  "status_short": [
+    " M .gitignore",
+    " M incident-response/canary/canary-results.md",
+    " M incident-response/canary/claude-confinement.py",
+    " M incident-response/evidence.py",
+    " M incident-response/responder-task.md",
+    " M incident-response/responder.py",
+    " M incident-response/tests/test_responder.py",
+    " M observability/grafana/provisioning/alerting/order-tracker-5xx.yaml",
+    "?? incident-response/RUNBOOK.md",
+    "?? incident-response/fixmode.py",
+    "?? incident-response/incidents/INC-20260930-095132-testalert/",
+    "?? incident-response/incidents/INC-20260930-095229-respondertest/",
+    "?? incident-response/tests/test_fixmode.py",
+    "?? observability/grafana/provisioning/alerting/contact-points.yaml",
+    "?? observability/grafana/provisioning/alerting/notification-policies.yaml"
+  ],
+  "status_short_count": 15
+}
