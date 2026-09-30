@@ -1,3 +1,4 @@
+import logging
 import os
 import sqlite3
 from contextlib import asynccontextmanager
@@ -5,13 +6,16 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
+
+from app import telemetry
 
 
 DB_PATH = Path(os.getenv("ORDER_DB_PATH", "data/orders.db"))
 STATUSES = {"received", "preparing", "shipped", "delivered"}
+LOGGER = logging.getLogger("order_tracker")
 
 
 def connect():
@@ -77,6 +81,23 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(title="Order Tracker", lifespan=lifespan)
+telemetry.configure_from_env(app)
+
+
+@app.exception_handler(Exception)
+async def log_unhandled_exception(request: Request, exc: Exception):
+    # Runs inside the request span, so the log carries its trace id. The exception
+    # still propagates afterwards, and the OTel middleware records it on the span.
+    route = request.scope.get("route")
+    route_path = getattr(route, "path", request.url.path)
+    LOGGER.error(
+        "unhandled exception on %s %s -> 500",
+        request.method,
+        route_path,
+        exc_info=exc,
+        extra={"http.request.method": request.method, "http.route": route_path, "http.response.status_code": 500},
+    )
+    return JSONResponse({"detail": "Internal Server Error"}, status_code=500)
 
 
 @app.get("/")
@@ -98,13 +119,29 @@ def list_orders():
     return [as_dict(row) for row in rows]
 
 
+def find_order(order_id):
+    with connect() as db:
+        return db.execute("SELECT * FROM orders WHERE id = ?", (order_id,)).fetchone()
+
+
+def log_lookup(order_id, status_code):
+    LOGGER.info(
+        "order lookup order_id=%s status=%s",
+        order_id,
+        status_code,
+        extra={"order_id": order_id, "http.response.status_code": status_code},
+    )
+
+
 @app.get("/api/orders/{order_id}")
 def get_order(order_id: str):
-    with connect() as db:
-        row = db.execute("SELECT * FROM orders WHERE id = ?", (order_id,)).fetchone()
+    row = find_order(order_id)
     if row is None:
+        log_lookup(order_id, 404)
         raise HTTPException(404, "Order not found")
-    return order_detail(row)
+    order = order_detail(row)
+    log_lookup(order_id, 200)
+    return order
 
 
 @app.post("/api/orders", status_code=201)
@@ -118,7 +155,7 @@ def create_order(order: NewOrder):
             (order_id, order.customer, order.item, order.priority, "received",
              datetime.now(timezone.utc).isoformat()),
         )
-    return get_order(order_id)
+    return order_detail(find_order(order_id))
 
 
 @app.patch("/api/orders/{order_id}")
@@ -132,4 +169,4 @@ def update_status(order_id: str, update: StatusUpdate):
         )
     if cursor.rowcount == 0:
         raise HTTPException(404, "Order not found")
-    return get_order(order_id)
+    return order_detail(find_order(order_id))
