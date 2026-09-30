@@ -1,0 +1,98 @@
+# Grafana-managed alert: server errors (5xx) on any Order Tracker route.
+#
+# Query (A): exact number of 5xx responses per route in the last 1m.
+#   Per series (one series per route/status/app instance):
+#     (count - count offset 1m)   series that already existed 1m ago: the plain delta
+#     or count                    series born within the last minute: all of it is new
+#   increase()/rate() cannot see the first sample of a new series, and a route's
+#   first 5xx is exactly that (the series is created by it), so they would miss a
+#   single 5xx. Every app start is a new series too (service_instance_id label),
+#   so counter resets never happen inside a series.
+#   `or on() vector(0)`: with no 5xx series at all the query still returns 0, so
+#   the rule is Normal instead of No data. `on()` matters: a plain `or vector(0)`
+#   also adds the label-less 0 when routes DO have errors (its empty label set
+#   matches none of theirs), leaving a spurious extra instance on every evaluation.
+# Condition (C): at least one 5xx on a route in the window.
+# Evaluated every 20s; pending 20s (two consecutive evaluations). A single 5xx
+# stays visible in the 1m window for ~60s after the collector's next scrape
+# (export 10s + scrape 15s), i.e. for about three evaluations, so a 20s pending
+# period still fires on one error while ignoring a one-evaluation glitch.
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: order-tracker-5xx
+    folder: Order Tracker
+    interval: 20s
+    rules:
+      - uid: order-tracker-5xx
+        title: OrderTracker5xx
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              refId: A
+              datasource:
+                type: prometheus
+                uid: prometheus
+              instant: true
+              range: false
+              editorMode: code
+              legendFormat: "{{http_route}}"
+              expr: >-
+                sum by (http_route) (
+                  (
+                    http_server_request_duration_seconds_count{service_name="order-tracker", http_response_status_code=~"5.."}
+                    - http_server_request_duration_seconds_count{service_name="order-tracker", http_response_status_code=~"5.."} offset 1m
+                  )
+                  or http_server_request_duration_seconds_count{service_name="order-tracker", http_response_status_code=~"5.."}
+                ) or on() vector(0)
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+              datasource:
+                type: __expr__
+                uid: __expr__
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [0]
+              datasource:
+                type: __expr__
+                uid: __expr__
+        # The query always returns a value (`or on() vector(0)`), so No data only appears
+        # if something is really wrong; keep it visible instead of mapping it to OK.
+        noDataState: NoData
+        execErrState: Error
+        for: 20s
+        isPaused: false
+        labels:
+          severity: critical
+          service: order-tracker
+          # `$$` escapes Grafana's env-var interpolation, which (unlike for the
+          # annotations below) strips `$labels` from label values in provisioned rules.
+          route: "{{ $$labels.http_route }}"
+        annotations:
+          summary: "{{ $values.B.Value }} 5xx response(s) on {{ $labels.http_route }} in the last 1m"
+          description: >-
+            Order Tracker returned {{ $values.B.Value }} server error(s) (HTTP 5xx) on route
+            {{ $labels.http_route }} in the last 1 minute (threshold: at least 1).
+            Customers calling this endpoint are getting errors.
+          __dashboardUid__: order-tracker-overview
+          __panelId__: "6"
+          dashboard_url: "http://localhost:3000/d/order-tracker-overview/order-tracker-overview?orgId=1&viewPanel=6"
+          runbook_url: "TODO(Q6): incident-response runbook for 5xx on order lookups"

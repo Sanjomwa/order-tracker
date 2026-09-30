@@ -552,6 +552,39 @@
       ]
     },
     {
+      "id": 13,
+      "type": "logs",
+      "title": "All logs",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 28,
+        "w": 24,
+        "h": 10
+      },
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true,
+        "dedupStrategy": "none"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "refId": "A",
+          "queryType": "range",
+          "expr": "{service_name=\"order-tracker\"}"
+        }
+      ]
+    },
+    {
       "id": 11,
       "type": "logs",
       "title": "Warnings and errors (level >= WARNING)",
@@ -561,9 +594,9 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 28,
+        "y": 38,
         "w": 24,
-        "h": 9
+        "h": 8
       },
       "options": {
         "showTime": true,
@@ -594,7 +627,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 37,
+        "y": 46,
         "w": 24,
         "h": 7
       },
