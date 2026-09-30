@@ -1,0 +1,21 @@
+{
+  "status": "success",
+  "data": {
+    "resultType": "matrix",
+    "result": [
+      {
+        "metric": {
+          "http_request_method": "GET",
+          "http_response_status_code": "500",
+          "http_route": "/api/orders/{order_id}"
+        },
+        "values": [
+          [
+            1790763330,
+            "0"
+          ]
+        ]
+      }
+    ]
+  }
+}

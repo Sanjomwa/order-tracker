@@ -1,0 +1,20 @@
+{
+  "replay_before_restart": [
+    {
+      "method": "GET",
+      "path": "/api/orders/express-1002",
+      "status": 200
+    }
+  ],
+  "replay_after_restart": [
+    {
+      "method": "GET",
+      "path": "/api/orders/express-1002",
+      "status": 200
+    }
+  ],
+  "grafana_rule_normal": {
+    "passed": true,
+    "detail": "rule instance for the route is Normal"
+  }
+}

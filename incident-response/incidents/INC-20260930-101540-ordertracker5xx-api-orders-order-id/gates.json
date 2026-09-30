@@ -1,0 +1,119 @@
+[
+  {
+    "gate": "replay_list_from_evidence",
+    "passed": true,
+    "detail": {
+      "requests": [
+        [
+          "GET",
+          "/api/orders/express-1002"
+        ]
+      ],
+      "notes": []
+    },
+    "at": "2026-09-30T10:15:41Z"
+  },
+  {
+    "gate": "replay_reproduces_before_fix",
+    "passed": true,
+    "detail": {
+      "results": [
+        {
+          "method": "GET",
+          "path": "/api/orders/express-1002",
+          "status": 500
+        }
+      ],
+      "detail": "exit 0"
+    },
+    "at": "2026-09-30T10:15:46Z"
+  },
+  {
+    "gate": "repo_untouched_by_agent",
+    "passed": true,
+    "detail": "no file outside the workspace changed",
+    "at": "2026-09-30T10:16:04Z"
+  },
+  {
+    "gate": "agent_run",
+    "passed": true,
+    "detail": {
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 17.9,
+      "cost_usd": 0.088853,
+      "num_turns": 8,
+      "permission_denials": 0,
+      "subtype": "success"
+    },
+    "at": "2026-09-30T10:16:04Z"
+  },
+  {
+    "gate": "diff_gate",
+    "passed": true,
+    "detail": {
+      "reasons": [],
+      "files": [
+        "app/main.py"
+      ],
+      "changed_lines": 2
+    },
+    "at": "2026-09-30T10:16:04Z"
+  },
+  {
+    "gate": "test_gate",
+    "passed": true,
+    "detail": {
+      "exit_code": 0,
+      "tail": [
+        "8 passed, 13 warnings in 0.89s"
+      ]
+    },
+    "at": "2026-09-30T10:16:06Z"
+  },
+  {
+    "gate": "replay_before_restart",
+    "passed": true,
+    "detail": {
+      "results": [
+        {
+          "method": "GET",
+          "path": "/api/orders/express-1002",
+          "status": 200
+        }
+      ],
+      "detail": "exit 0"
+    },
+    "at": "2026-09-30T10:16:07Z"
+  },
+  {
+    "gate": "real_tree_unchanged_since_workspace",
+    "passed": true,
+    "detail": "app/ matches the workspace baseline",
+    "at": "2026-09-30T10:16:07Z"
+  },
+  {
+    "gate": "restart_app",
+    "passed": true,
+    "detail": "exit 0: ing \n Container order-tracker-loki-1 Waiting \n Container order-tracker-tempo-1 Waiting \n Container order-tracker-app-1 Waiting \n Container order-tracker-tempo-1 Healthy \n Container order-tracker-otel-collector-1 Healthy \n Container order-tracker-loki-1 Healthy \n Container order-tracker-app-1 Healthy",
+    "at": "2026-09-30T10:16:35Z"
+  },
+  {
+    "gate": "replay_after_restart",
+    "passed": true,
+    "detail": [
+      {
+        "method": "GET",
+        "path": "/api/orders/express-1002",
+        "status": 200
+      }
+    ],
+    "at": "2026-09-30T10:16:35Z"
+  },
+  {
+    "gate": "grafana_rule_normal",
+    "passed": true,
+    "detail": "rule instance for the route is Normal",
+    "at": "2026-09-30T10:16:35Z"
+  }
+]

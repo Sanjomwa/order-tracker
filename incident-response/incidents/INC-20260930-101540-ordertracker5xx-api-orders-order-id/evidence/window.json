@@ -1,0 +1,17 @@
+{
+  "incident_id": "INC-20260930-101540-ordertracker5xx-api-orders-order-id",
+  "startsAt": "2026-09-30T10:15:30Z",
+  "anchor": "2026-09-30T10:15:30Z",
+  "anchor_source": "startsAt",
+  "route": "/api/orders/{order_id}",
+  "route_source": "alert labels",
+  "logs_and_traces": {
+    "start": "2026-09-30T10:00:30Z",
+    "end": "2026-09-30T10:15:41Z"
+  },
+  "metrics": {
+    "start": "2026-09-30T09:15:30Z",
+    "end": "2026-09-30T10:15:41Z",
+    "step_seconds": 30
+  }
+}

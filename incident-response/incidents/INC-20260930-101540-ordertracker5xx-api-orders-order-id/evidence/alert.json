@@ -1,0 +1,31 @@
+{
+  "status": "firing",
+  "labels": {
+    "alertname": "OrderTracker5xx",
+    "grafana_folder": "Order Tracker",
+    "http_route": "/api/orders/{order_id}",
+    "route": "/api/orders/{order_id}",
+    "service": "order-tracker",
+    "severity": "critical"
+  },
+  "annotations": {
+    "dashboard_url": "http://localhost:3000/d/order-tracker-overview/order-tracker-overview?orgId=1&viewPanel=6",
+    "description": "Order Tracker returned 1 server error(s) (HTTP 5xx) on route /api/orders/{order_id} in the last 1 minute (threshold: at least 1). Customers calling this endpoint are getting errors.",
+    "runbook_url": "https://github.com/Sanjomwa/order-tracker/blob/main/incident-response/RUNBOOK.md",
+    "summary": "1 5xx response(s) on /api/orders/{order_id} in the last 1m"
+  },
+  "startsAt": "2026-09-30T10:15:30Z",
+  "endsAt": "0001-01-01T00:00:00Z",
+  "generatorURL": "http://localhost:3000/alerting/grafana/order-tracker-5xx/view?orgId=1",
+  "fingerprint": "5bacc87f5d839c5a",
+  "silenceURL": "http://localhost:3000/alerting/silence/new?alertmanager=grafana&matcher=__alert_rule_uid__%3Dorder-tracker-5xx&matcher=http_route%3D%2Fapi%2Forders%2F%7Border_id%7D&matcher=route%3D%2Fapi%2Forders%2F%7Border_id%7D&matcher=service%3Dorder-tracker&matcher=severity%3Dcritical&orgId=1",
+  "dashboardURL": "http://localhost:3000/d/order-tracker-overview?from=1790759730000&orgId=1&to=1790763340842",
+  "panelURL": "http://localhost:3000/d/order-tracker-overview?from=1790759730000&orgId=1&to=1790763340842&viewPanel=6",
+  "values": {
+    "A": 1,
+    "B": 1,
+    "C": 1
+  },
+  "valueString": "[ var='A' labels={http_route=/api/orders/{order_id}} value=1 ], [ var='B' labels={http_route=/api/orders/{order_id}} value=1 ], [ var='C' labels={http_route=/api/orders/{order_id}} value=1 ]",
+  "orgId": 1
+}

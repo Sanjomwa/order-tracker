@@ -1,0 +1,32 @@
+{
+  "mode": "fix",
+  "reason": "all fix-mode preconditions passed",
+  "escalate": false,
+  "preconditions": [
+    {
+      "precondition": "not_a_test_alert",
+      "passed": true,
+      "detail": "no test label"
+    },
+    {
+      "precondition": "grafana_rule_firing",
+      "passed": true,
+      "detail": "rule 'OrderTracker5xx' instance state 'Alerting' route '/api/orders/{order_id}'"
+    },
+    {
+      "precondition": "app_and_tests_clean",
+      "passed": true,
+      "detail": "clean"
+    },
+    {
+      "precondition": "first_fix_attempt_for_incident",
+      "passed": true,
+      "detail": "first attempt"
+    },
+    {
+      "precondition": "no_other_fix_in_progress",
+      "passed": true,
+      "detail": "lock acquired"
+    }
+  ]
+}

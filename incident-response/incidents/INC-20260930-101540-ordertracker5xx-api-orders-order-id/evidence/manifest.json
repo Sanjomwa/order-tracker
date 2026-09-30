@@ -1,0 +1,96 @@
+{
+  "incident_id": "INC-20260930-101540-ordertracker5xx-api-orders-order-id",
+  "generated_at": "2026-09-30T10:15:41Z",
+  "read_only": true,
+  "secret_scan": "passed (key-like values, URL credentials, bearer tokens, private keys, API keys, values of key-like settings in .env)",
+  "entries": [
+    {
+      "file": "alert.json",
+      "kind": "input",
+      "query": "the alert as received (untrusted data; redacted copy)",
+      "timestamp": "2026-09-30T10:15:41Z",
+      "bytes": 1796,
+      "sha256": "3bc367903a359a31d17bb53257c8a00fcde496fd9323f6b3427108350347cde4"
+    },
+    {
+      "file": "window.json",
+      "kind": "input",
+      "query": "time window and route derived from the alert",
+      "timestamp": "2026-09-30T10:15:41Z",
+      "bytes": 469,
+      "sha256": "4b88f4ef666ca5eb95421368fbc28560a9860adac81ad2340aa75151e2ed3dbe"
+    },
+    {
+      "file": "metrics-5xx-by-route.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:9090/api/v1/query_range query=[sum by (http_route, http_request_method, http_response_status_code) (increase(http_server_request_duration_seconds_count{service_name=\"order-tracker\", http_route=\"/api/orders/{order_id}\", http_response_status_code=~\"5..\"}[1m]))] step=30",
+      "timestamp": "2026-09-30T10:15:41Z",
+      "bytes": 369,
+      "sha256": "03997e58887aca09e7b5797c6f766b627ae852094456db08e4ea834240897aa3"
+    },
+    {
+      "file": "metrics-requests-by-route-status.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:9090/api/v1/query_range query=[sum by (http_route, http_request_method, http_response_status_code) (increase(http_server_request_duration_seconds_count{service_name=\"order-tracker\", http_route=\"/api/orders/{order_id}\"}[1m]))] step=30",
+      "timestamp": "2026-09-30T10:15:41Z",
+      "bytes": 8480,
+      "sha256": "8cab68a490e92467314f960fcd3d8990e18b9396c2443e2d1ee3c101c2f5300b"
+    },
+    {
+      "file": "metrics-request-totals.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:9090/api/v1/query query=[sum by (http_route, http_request_method, http_response_status_code, service_version) (http_server_request_duration_seconds_count{service_name=\"order-tracker\", http_route=\"/api/orders/{order_id}\"})]",
+      "timestamp": "2026-09-30T10:15:41Z",
+      "bytes": 660,
+      "sha256": "bb8a35e22b65663f79263d959d9f62bc0cacb1e3171c5853f882b8ce4475ce7d"
+    },
+    {
+      "file": "logs-warn-error.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:3100/loki/api/v1/query_range query=[{service_name=\"order-tracker\"} | detected_level=~\"(?i)warn|warning|error|fatal|critical\"] limit=200 (compacted: line<=500 chars)",
+      "timestamp": "2026-09-30T10:15:41Z",
+      "bytes": 2275,
+      "sha256": "693946d6b500ff8c6f60e7e9b3f321e2834cc3e37cd5bcbd04e9b09014a40d30"
+    },
+    {
+      "file": "logs-recent.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:3100/loki/api/v1/query_range query=[{service_name=\"order-tracker\"}] limit=200 (compacted: line<=500 chars)",
+      "timestamp": "2026-09-30T10:15:41Z",
+      "bytes": 2275,
+      "sha256": "693946d6b500ff8c6f60e7e9b3f321e2834cc3e37cd5bcbd04e9b09014a40d30"
+    },
+    {
+      "file": "tempo-error-traces-search.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:3200/api/search q=[{resource.service.name=\"order-tracker\" && status = error}] limit=20",
+      "timestamp": "2026-09-30T10:15:41Z",
+      "bytes": 1738,
+      "sha256": "fdf8deea9e5046f1e5102f66706e259c0198851e658ed1f2be6aa1306a696452"
+    },
+    {
+      "file": "tempo-trace-1.json",
+      "kind": "http_get",
+      "query": "GET http://localhost:3200/api/v2/traces/3d5d981a963b381309f337c288e7c3b4 (full trace; source: error-trace search)",
+      "timestamp": "2026-09-30T10:15:41Z",
+      "bytes": 7299,
+      "sha256": "0ee6af1816f902230d851391ed67257b789d717d7917a7a9c7bc2682b8db0460"
+    },
+    {
+      "file": "docker-compose-ps.json",
+      "kind": "command",
+      "query": "docker compose ps --all --format json (fields: Service, State, Health, Status, Image, RunningFor, ExitCode)",
+      "timestamp": "2026-09-30T10:15:41Z",
+      "bytes": 1309,
+      "sha256": "f6046747392e6b64960c8f61ffa15e836ea794a7bdffc2b351919e06571bff8a"
+    },
+    {
+      "file": "git-state.json",
+      "kind": "command",
+      "query": "git rev-parse HEAD; git rev-parse --abbrev-ref HEAD; git status --short (first 100 lines)",
+      "timestamp": "2026-09-30T10:15:41Z",
+      "bytes": 223,
+      "sha256": "819b18b897e272a249f69a06ba60a6206bc9624b0b87ea0e2644b2d3161ab29d"
+    }
+  ]
+}

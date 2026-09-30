@@ -1,0 +1,8 @@
+{"at": "2026-09-30T10:15:40Z", "event": "alert_received", "alertname": "OrderTracker5xx", "test": false, "dedupe_key": "fp:5bacc87f5d839c5a:2026-09-30T10:15:30Z"}
+{"at": "2026-09-30T10:15:41Z", "event": "mode_selected", "mode": "fix", "reason": "all fix-mode preconditions passed"}
+{"at": "2026-09-30T10:15:41Z", "event": "evidence_collected", "files": 11, "secret_scan": "passed"}
+{"at": "2026-09-30T10:15:46Z", "event": "responder_started", "mode": "fix", "model": "sonnet", "max_budget_usd": "1.00"}
+{"at": "2026-09-30T10:16:04Z", "event": "responder_finished", "mode": "fix", "ok": true, "exit_code": 0, "seconds": 17.9, "cost_usd": 0.088853, "num_turns": 8, "permission_denials": 0, "subtype": "success"}
+{"at": "2026-09-30T10:16:35Z", "event": "fix_run_finished", "outcome": "fixed", "why": "", "failed_gate": null}
+{"at": "2026-09-30T10:16:35Z", "event": "final_secret_scan", "result": "passed"}
+{"at": "2026-09-30T10:16:35Z", "event": "finished", "outcome": "fixed"}

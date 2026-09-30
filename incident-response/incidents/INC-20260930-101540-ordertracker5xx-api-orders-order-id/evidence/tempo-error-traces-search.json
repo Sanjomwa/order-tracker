@@ -1,0 +1,72 @@
+{
+  "traces": [
+    {
+      "traceID": "3d5d981a963b381309f337c288e7c3b4",
+      "rootServiceName": "order-tracker",
+      "rootTraceName": "GET /api/orders/{order_id}",
+      "startTimeUnixNano": "1790763283591792125",
+      "durationMs": 85,
+      "spanSet": {
+        "spans": [
+          {
+            "spanID": "b03c5d139d5dd87b",
+            "startTimeUnixNano": "1790763283591792125",
+            "durationNanos": "85525664",
+            "attributes": [
+              {
+                "key": "service.name",
+                "value": {
+                  "stringValue": "order-tracker"
+                }
+              },
+              {
+                "key": "status",
+                "value": {
+                  "stringValue": "error"
+                }
+              }
+            ]
+          }
+        ],
+        "matched": 1
+      },
+      "spanSets": [
+        {
+          "spans": [
+            {
+              "spanID": "b03c5d139d5dd87b",
+              "startTimeUnixNano": "1790763283591792125",
+              "durationNanos": "85525664",
+              "attributes": [
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "order-tracker"
+                  }
+                },
+                {
+                  "key": "status",
+                  "value": {
+                    "stringValue": "error"
+                  }
+                }
+              ]
+            }
+          ],
+          "matched": 1
+        }
+      ],
+      "serviceStats": {
+        "order-tracker": {
+          "spanCount": 1,
+          "errorCount": 1
+        }
+      }
+    }
+  ],
+  "metrics": {
+    "inspectedBytes": "20643",
+    "completedJobs": 3,
+    "totalJobs": 3
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "count": 1,
+  "lines": [
+    {
+      "time": "2026-09-30T10:14:43Z",
+      "line": "unhandled exception on GET /api/orders/{order_id} -> 500",
+      "detected_level": "ERROR",
+      "severity_text": "ERROR",
+      "trace_id": "3d5d981a963b381309f337c288e7c3b4",
+      "span_id": "b03c5d139d5dd87b",
+      "service_version": "dev",
+      "http_route": "/api/orders/{order_id}",
+      "http_request_method": "GET",
+      "http_response_status_code": "500",
+      "code_function_name": "log_unhandled_exception",
+      "code_file_path": "/app/app/main.py",
+      "code_line_number": "93",
+      "exception_type": "ValueError",
+      "exception_message": "day is out of range for month",
+      "exception_stacktrace": "Traceback (most recent call last):\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py\", line 164, in __call__\n    await self.app(scope, receive, _send)\n  File \"/app/.venv/lib/python3.12/site-packages/opentelemetry/instrumentation/fastapi/__init__.py\", line 360, in __call__\n    await self.app(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py\", line 63, in __call__\n    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py\", line 53, in wrapped_app\n    raise exc\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py\", line 42, in wrapped_app\n    await app(scope, receive, sender)\n  File \"/app/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py\", line 18, in __call__\n    await self.app(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/routing.py\", line 670, in __call__\n    await self.middleware_stack(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/fastapi/routing.py\", line 2734, in app\n    await route.handle(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/fastapi/routing.py\", line 1281, in handle\n    await super().handle(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/routing.py\", line 280, in handle\n    await self.app(scope, receive, send)\n  File \"/app/"
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "trace": {
+    "resourceSpans": [
+      {
+        "resource": {
+          "attributes": [
+            {
+              "key": "deployment.environment.name",
+              "value": {
+                "stringValue": "local"
+              }
+            },
+            {
+              "key": "service.instance.id",
+              "value": {
+                "stringValue": "45e47d61-a7e7-46ca-b19e-f80e75f5d7a9"
+              }
+            },
+            {
+              "key": "service.version",
+              "value": {
+                "stringValue": "dev"
+              }
+            },
+            {
+              "key": "telemetry.sdk.language",
+              "value": {
+                "stringValue": "python"
+              }
+            },
+            {
+              "key": "telemetry.sdk.name",
+              "value": {
+                "stringValue": "opentelemetry"
+              }
+            },
+            {
+              "key": "telemetry.sdk.version",
+              "value": {
+                "stringValue": "1.45.0"
+              }
+            },
+            {
+              "key": "service.name",
+              "value": {
+                "stringValue": "order-tracker"
+              }
+            }
+          ]
+        },
+        "scopeSpans": [
+          {
+            "scope": {
+              "name": "opentelemetry.instrumentation.fastapi",
+              "version": "0.66b0"
+            },
+            "spans": [
+              {
+                "traceId": "PV2YGpY7OBMJ8zfCiOfDtA==",
+                "spanId": "sDxdE51d2Hs=",
+                "name": "GET /api/orders/{order_id}",
+                "kind": "SPAN_KIND_SERVER",
+                "startTimeUnixNano": "1790763283591792125",
+                "endTimeUnixNano": "1790763283677317789",
+                "attributes": [
+                  {
+                    "key": "url.scheme",
+                    "value": {
+                      "stringValue": "http"
+                    }
+                  },
+                  {
+                    "key": "server.port",
+                    "value": {
+                      "intValue": "8000"
+                    }
+                  },
+                  {
+                    "key": "network.protocol.version",
+                    "value": {
+                      "stringValue": "1.1"
+                    }
+                  },
+                  {
+                    "key": "error.type",
+                    "value": {
+                      "stringValue": "500"
+                    }
+                  },
+                  {
+                    "key": "client.address",
+                    "value": {
+                      "stringValue": "10.215.24.1"
+                    }
+                  },
+                  {
+                    "key": "client.port",
+                    "value": {
+                      "intValue": "59956"
+                    }
+                  },
+                  {
+                    "key": "http.response.status_code",
+                    "value": {
+                      "intValue": "500"
+                    }
+                  },
+                  {
+                    "key": "http.request.method",
+                    "value": {
+                      "stringValue": "GET"
+                    }
+                  },
+                  {
+                    "key": "url.path",
+                    "value": {
+                      "stringValue": "/api/orders/express-1002"
+                    }
+                  },
+                  {
+                    "key": "server.address",
+                    "value": {
+                      "stringValue": "10.215.24.7:8000"
+                    }
+                  },
+                  {
+                    "key": "http.route",
+                    "value": {
+                      "stringValue": "/api/orders/{order_id}"
+                    }
+                  }
+                ],
+                "events": [
+                  {
+                    "timeUnixNano": "1790763283653421244",
+                    "name": "exception",
+                    "attributes": [
+                      {
+                        "key": "exception.type",
+                        "value": {
+                          "stringValue": "ValueError"
+                        }
+                      },
+                      {
+                        "key": "exception.message",
+                        "value": {
+                          "stringValue": "day is out of range for month"
+                        }
+                      },
+                      {
+                        "key": "exception.stacktrace",
+                        "value": {
+                          "stringValue": "Traceback (most recent call last):\n  File \"/app/.venv/lib/python3.12/site-packages/opentelemetry/instrumentation/fastapi/__init__.py\", line 360, in __call__\n    await self.app(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py\", line 63, in __call__\n    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py\", line 53, in wrapped_app\n    raise exc\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py\", line 42, in wrapped_app\n    await app(scope, receive, sender)\n  File \"/app/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py\", line 18, in __call__\n    await self.app(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/routing.py\", line 670, in __call__\n    await self.middleware_stack(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/fastapi/routing.py\", line 2734, in app\n    await route.handle(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/fastapi/routing.py\", line 1281, in handle\n    await super().handle(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/routing.py\", line 280, in handle\n    await self.app(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/fastapi/routing.py\", line 158, in app\n    await wrap_app_handling_exceptions(app, request)(scope, receive, send)\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py\", line 53, in wrapped_app\n    raise exc\n  File \"/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py\", line 42, in wrapped_app\n    await app(scope, receive, sender)\n  File \"/app/.venv/lib/python3.12/site-packages/fastapi/routing.py\", line 144, in app\n    response = await f(request)\n               ^^^^^^^^^^^^^^^^\n  File \"/app/.venv/lib/python3.12/site-packages/fastapi/routing.py\", line 706, in app\n    raw_response = await run_endpoint_functio"
+                        }
+                      },
+                      {
+                        "key": "exception.escaped",
+                        "value": {
+                          "stringValue": "False"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "status": {
+                  "code": "STATUS_CODE_ERROR"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "metrics": {
+    "inspectedBytes": "31005"
+  }
+}
