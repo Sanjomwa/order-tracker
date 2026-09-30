@@ -1,0 +1,17 @@
+{
+  "incident_id": "INC-20260930-093521-respondertest",
+  "startsAt": null,
+  "anchor": "2026-09-30T09:35:21Z",
+  "anchor_source": "now (startsAt absent or unusable)",
+  "route": null,
+  "route_source": "none in alert: all routes",
+  "logs_and_traces": {
+    "start": "2026-09-30T09:20:21Z",
+    "end": "2026-09-30T09:35:21Z"
+  },
+  "metrics": {
+    "start": "2026-09-30T08:35:21Z",
+    "end": "2026-09-30T09:35:21Z",
+    "step_seconds": 30
+  }
+}

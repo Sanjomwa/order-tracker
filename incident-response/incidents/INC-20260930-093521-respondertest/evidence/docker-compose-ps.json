@@ -1,0 +1,56 @@
+[
+  {
+    "Service": "app",
+    "State": "running",
+    "Health": "healthy",
+    "Status": "Up 39 minutes (healthy)",
+    "Image": "order-tracker:local",
+    "RunningFor": "39 minutes ago",
+    "ExitCode": 0
+  },
+  {
+    "Service": "grafana",
+    "State": "running",
+    "Health": "healthy",
+    "Status": "Up 30 minutes (healthy)",
+    "Image": "grafana/grafana:12.3.11",
+    "RunningFor": "45 minutes ago",
+    "ExitCode": 0
+  },
+  {
+    "Service": "loki",
+    "State": "running",
+    "Health": "",
+    "Status": "Up 39 minutes",
+    "Image": "grafana/loki:3.6.17",
+    "RunningFor": "45 minutes ago",
+    "ExitCode": 0
+  },
+  {
+    "Service": "otel-collector",
+    "State": "running",
+    "Health": "",
+    "Status": "Up 45 minutes",
+    "Image": "otel/opentelemetry-collector-contrib:0.149.0",
+    "RunningFor": "45 minutes ago",
+    "ExitCode": 0
+  },
+  {
+    "Service": "prometheus",
+    "State": "running",
+    "Health": "healthy",
+    "Status": "Up 45 minutes (healthy)",
+    "Image": "prom/prometheus:v3.5.5",
+    "RunningFor": "45 minutes ago",
+    "ExitCode": 0
+  },
+  {
+    "Service": "tempo",
+    "State": "running",
+    "Health": "",
+    "Status": "Up 45 minutes",
+    "Image": "grafana/tempo:2.10.8",
+    "RunningFor": "45 minutes ago",
+    "ExitCode": 0
+  }
+]

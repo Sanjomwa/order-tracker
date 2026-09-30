@@ -19,5 +19,5 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["."]
+testpaths = ["tests", "incident-response/tests"]
+pythonpath = [".", "incident-response"]

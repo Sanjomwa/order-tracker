@@ -1,0 +1,4 @@
+{
+  "mode": "read-only",
+  "reason": "test alert (labels.test == \"true\"): read-only analysis only"
+}

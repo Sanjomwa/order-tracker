@@ -1,0 +1,17 @@
+{
+  "head": "bcf7889734eff9149c9e79881737333e7a8e3b31",
+  "branch": "main",
+  "status_short": [
+    " M .dockerignore",
+    " M .gitignore",
+    " M pyproject.toml",
+    "?? incident-response/evidence.py",
+    "?? incident-response/incidents/",
+    "?? incident-response/redact_secrets.py",
+    "?? incident-response/responder-task.md",
+    "?? incident-response/responder.py",
+    "?? incident-response/start-responder.sh",
+    "?? incident-response/tests/"
+  ],
+  "status_short_count": 10
+}

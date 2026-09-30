@@ -1,0 +1,10 @@
+{
+  "status": "firing",
+  "labels": {
+    "alertname": "ResponderTest",
+    "test": "true"
+  },
+  "annotations": {
+    "summary": "Test notification; no incident to fix"
+  }
+}

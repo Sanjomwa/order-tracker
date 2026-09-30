@@ -8,3 +8,6 @@ data/
 # incident-response runtime output (never committed)
 incident-response/inbox/
 incident-response/canary/runs/
+incident-response/logs/
+incident-response/state/
+incident-response/quarantine/
